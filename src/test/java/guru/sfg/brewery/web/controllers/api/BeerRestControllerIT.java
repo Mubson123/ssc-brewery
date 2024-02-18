@@ -2,15 +2,31 @@ package guru.sfg.brewery.web.controllers.api;
 
 import guru.sfg.brewery.web.controllers.BaseIT;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@SpringBootTest
 class BeerRestControllerIT extends BaseIT {
+
+  @Test
+  void deleteBeerHttpBasicUserRole() throws Exception {
+    mockMvc.perform(delete("/api/v1/beer/0f5086a4-c547-4a59-9d51-fb9dad5a84ed")
+            .with(httpBasic("user", "password")))
+        .andExpect(status().isForbidden());
+
+  }
+
+  @Test
+  void deleteBeerHttpBasicCustomerRole() throws Exception {
+    mockMvc.perform(delete("/api/v1/beer/0f5086a4-c547-4a59-9d51-fb9dad5a84ed")
+            .with(httpBasic("scott", "tiger")))
+        .andExpect(status().isForbidden());
+
+  }
 
   @Test
   void deleteBeerUrl() throws Exception {
@@ -37,7 +53,7 @@ class BeerRestControllerIT extends BaseIT {
   @Test
   void deleteBeer() throws Exception {
     mockMvc.perform(delete("/api/v1/beer/0f5086a4-c547-4a59-9d51-fb9dad5a84ed")
-        .header("Api-Key", "spring").header("Api-Secret", "guru"))
+            .header("Api-Key", "spring").header("Api-Secret", "guru"))
         .andExpect(status().isOk());
   }
 
